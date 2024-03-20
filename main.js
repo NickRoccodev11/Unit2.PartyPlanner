@@ -1,6 +1,10 @@
-const API_URL = 'https://fsa-crud-2aa9294fe819.herokuapp.com/api/402-FTB-ET-WEB-FT/events'
+//the URL to out API with the event endpoint
 
-const state = {
+const API_URL = 'https://fsa-crud-2aa9294fe819.herokuapp.com/api/2402-FTB-ET-WEB-FT/events'
+
+//state, stored as an array of objects
+
+let state = {
   names: [],
   dates: [],
   locations: [],
@@ -12,16 +16,11 @@ const state = {
 const eventList = document.getElementById('events');
 const form = document.querySelector("form");
 
-
+//event handler to delete a post
 
 const deleteEvent = async (e) => {
-  console.log("delete button")
-  const buttonID = e.target.getAttribute("data-event-id")
-  console.log(buttonID)
-  
-  const deleteURL = `${API_URL}/${buttonID}`
-  console.log(deleteURL)
-  console.log( await fetch(deleteURL))
+const buttonID = e.target.getAttribute("data-event-id")
+const deleteURL = `${API_URL}/${buttonID}`
   try {
     const response = await fetch(deleteURL, {
       method: "DELETE"
@@ -32,8 +31,10 @@ const deleteEvent = async (e) => {
   } catch (err) {
     console.log(err.message)
   }
-  render();
+  fetchEvents();
 }
+
+//eventListener and handler for submitting a new event
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -65,34 +66,35 @@ form.addEventListener("submit", async (e) => {
     console.log(err.message)
   }
   fetchEvents();
-  //render();
 });
 
 const render = () => {
-  eventList.innerHTML=''
-  state.names.forEach((event, idx) => {
-    const tr = document.createElement("tr");
-    const nameData = document.createElement("td");
-    const dateData = document.createElement("td");
-    const locData = document.createElement("td");
-    const descData = document.createElement("td");
-    const deleteButton = document.createElement("button");
-    nameData.innerText = event;
-    dateData.innerText = state.dates[idx];
-    locData.innerText = state.locations[idx];
-    descData.innerText = state.descriptions[idx];
-    descData.classList.add("descrip")
-    deleteButton.innerText = "delete event";
+  console.log(state)
+  state.ids.forEach((event, idx) => {
+      const tr = document.createElement("tr");
+      const nameData = document.createElement("td");
+      const dateData = document.createElement("td");
+      const locData = document.createElement("td");
+      const descData = document.createElement("td");
+      const deleteButton = document.createElement("button");
+      nameData.innerText = state.names[idx]
+      dateData.innerText = state.dates[idx];
+      locData.innerText = state.locations[idx];
+      descData.innerText = state.descriptions[idx];
+      descData.classList.add("descrip")
+      deleteButton.innerText = "delete event";
 
-    deleteButton.classList.add("delete");
-    deleteButton.setAttribute("data-event-id", state.ids[idx]);
+      deleteButton.classList.add("delete");
+      deleteButton.setAttribute("data-event-id", state.ids[idx]);
 
-    tr.appendChild(nameData);
-    tr.appendChild(dateData);
-    tr.appendChild(locData);
-    tr.appendChild(descData);
-    tr.appendChild(deleteButton);
-    eventList.appendChild(tr);
+      tr.appendChild(nameData);
+      tr.appendChild(dateData);
+      tr.appendChild(locData);
+      tr.appendChild(descData);
+      tr.appendChild(deleteButton);
+      eventList.appendChild(tr);
+    
+      
   })
   const deleteButtons = document.querySelectorAll(".delete");
 
@@ -107,11 +109,14 @@ const fetchEvents = async () => {
     const res = await fetch(API_URL);
     const events = await res.json()
     events.data.forEach(event => {
+        if (!state.ids.includes(events.data.id)) {
+          console.log(events.data.id, "HERE")
       state.names.push(event.name)
       state.dates.push(new Date(event.date))
       state.locations.push(event.location)
       state.descriptions.push(event.description)
       state.ids.push(event.id)
+    }
     });
   } catch {
     throw new Error("whoops, couldn't find it!")
