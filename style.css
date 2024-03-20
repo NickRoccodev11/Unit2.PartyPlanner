@@ -1,0 +1,25 @@
+body {
+  background-color: rgb(93, 121, 65);
+}
+
+h1 {
+  text-align: center;
+  color: rgb(179, 236, 122);
+  text-shadow: 5px 5px 5px rgb(3, 93, 3);
+}
+
+table {
+  background-color: rgb(166, 210, 122);
+}
+
+td {
+  background-color: rgb(171, 240, 189);
+}
+
+.descrip {
+  font-size: smaller;
+}
+
+th{
+  color: darkgreen;
+}
