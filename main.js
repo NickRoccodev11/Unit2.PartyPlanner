@@ -19,8 +19,8 @@ const form = document.querySelector("form");
 //event handler to delete a post
 
 const deleteEvent = async (e) => {
-const buttonID = e.target.getAttribute("data-event-id")
-const deleteURL = `${API_URL}/${buttonID}`
+  const buttonID = e.target.getAttribute("data-event-id")
+  const deleteURL = `${API_URL}/${buttonID}`
   try {
     const response = await fetch(deleteURL, {
       method: "DELETE"
@@ -68,34 +68,37 @@ form.addEventListener("submit", async (e) => {
   fetchEvents();
 });
 
+//render the page by creating html elements and adding state to their contents
+
 const render = () => {
-  console.log(state)
   state.ids.forEach((event, idx) => {
-      const tr = document.createElement("tr");
-      const nameData = document.createElement("td");
-      const dateData = document.createElement("td");
-      const locData = document.createElement("td");
-      const descData = document.createElement("td");
-      const deleteButton = document.createElement("button");
-      nameData.innerText = state.names[idx]
-      dateData.innerText = state.dates[idx];
-      locData.innerText = state.locations[idx];
-      descData.innerText = state.descriptions[idx];
-      descData.classList.add("descrip")
-      deleteButton.innerText = "delete event";
+    const tr = document.createElement("tr");
+    const nameData = document.createElement("td");
+    const dateData = document.createElement("td");
+    const locData = document.createElement("td");
+    const descData = document.createElement("td");
+    const deleteButton = document.createElement("button");
+    nameData.innerText = state.names[idx]
+    dateData.innerText = state.dates[idx];
+    locData.innerText = state.locations[idx];
+    descData.innerText = state.descriptions[idx];
+    descData.classList.add("descrip")
+    deleteButton.innerText = "delete event";
 
-      deleteButton.classList.add("delete");
-      deleteButton.setAttribute("data-event-id", state.ids[idx]);
+    //use data-attributes to give the delete button a unique identifier
+    deleteButton.classList.add("delete");
+    deleteButton.setAttribute("data-event-id", state.ids[idx]);
 
-      tr.appendChild(nameData);
-      tr.appendChild(dateData);
-      tr.appendChild(locData);
-      tr.appendChild(descData);
-      tr.appendChild(deleteButton);
-      eventList.appendChild(tr);
-    
-      
+    tr.appendChild(nameData);
+    tr.appendChild(dateData);
+    tr.appendChild(locData);
+    tr.appendChild(descData);
+    tr.appendChild(deleteButton);
+    eventList.appendChild(tr);
+
+
   })
+  //after creating all elements, loop through buttons to addEventlisteners to each
   const deleteButtons = document.querySelectorAll(".delete");
 
   deleteButtons.forEach(button => {
@@ -104,19 +107,29 @@ const render = () => {
 
 
 }
+//call to API, clear state and page, add API data to state
 const fetchEvents = async () => {
   try {
     const res = await fetch(API_URL);
-    const events = await res.json()
+    const events = await res.json();
+
+//clear state and empty eventList before repopulating page
+
+    state.dates = [];
+    state.names = [];
+    state.locations = [];
+    state.ids = [];
+    state.descriptions = [];
+    eventList.innerHTML = '';
+
     events.data.forEach(event => {
-        if (!state.ids.includes(events.data.id)) {
-          console.log(events.data.id, "HERE")
-      state.names.push(event.name)
-      state.dates.push(new Date(event.date))
-      state.locations.push(event.location)
-      state.descriptions.push(event.description)
-      state.ids.push(event.id)
-    }
+      if (!state.ids.includes(events.data.id)) {
+        state.names.push(event.name)
+        state.dates.push(new Date(event.date))
+        state.locations.push(event.location)
+        state.descriptions.push(event.description)
+        state.ids.push(event.id)
+      }
     });
   } catch {
     throw new Error("whoops, couldn't find it!")
